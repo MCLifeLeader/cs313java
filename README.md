@@ -1,195 +1,120 @@
-Webapp Runner allows you to launch an application in a Tomcat container on any computer that has a JRE installed. No previous steps to install Tomcat are required when using Webapp Runner. It's just a jar file that can be executed and configured using the `java` command.
+Heroku buildpack for Java [![Build Status](https://travis-ci.org/heroku/heroku-buildpack-java.svg)](https://travis-ci.org/heroku/heroku-buildpack-java)
+=========================
 
-This article will walk you through building an application that launches with Webapp Runner and deploying that application to Heroku.
+![java](https://cloud.githubusercontent.com/assets/871315/20325947/f3544014-ab43-11e6-9c51-8240ce161939.png)
 
-Follow each step to build an app from scratch, or skip to the end get the source for this article. You can also use almost any existing Maven webapp project.
+This is the official [Heroku buildpack](http://devcenter.heroku.com/articles/buildpack) for Java apps.
+It uses Maven 3.3.9 to build your application and OpenJDK 8 to run it. However, the JDK version can be configured as described below.
 
-## Prerequisites
+## How it works
 
-* Basic Java knowledge, including an installed version of the JVM and Maven.
-* Basic Git knowledge, including an installed version of Git.
+The buildpack will detect your app as Java if it has a `pom.xml` file in its root directory.  It will use Maven to execute the build defined by your `pom.xml` and download your dependencies. The `.m2` folder (local maven repository) will be cached between builds for faster dependency resolution. However neither the mvn executable or the .m2 folder will be available in your slug at runtime.
 
-### How Does Webapp Runner Work?
+## Documentation
 
-When using Webapp Runner you'll launch your application locally and on Heroku with a command like this:
-    
-    :::term
-    $ java -jar webapp-runner.jar application.war
-    deploying app from: /Users/johnsimone/dev/gitrepos/devcenter-webapp-runner/target/webappRunnerSample.war
-    Feb 14, 2012 5:21:44 PM org.apache.coyote.AbstractProtocol init
-    INFO: Initializing ProtocolHandler ["http-bio-8080"]
-    Feb 14, 2012 5:21:44 PM org.apache.catalina.core.StandardService startInternal
-    INFO: Starting service Tomcat
-    Feb 14, 2012 5:21:44 PM org.apache.catalina.core.StandardEngine startInternal
-    INFO: Starting Servlet Engine: Apache Tomcat/7.0.22
-    Feb 14, 2012 5:21:44 PM org.apache.catalina.startup.ContextConfig webConfig
-    INFO: No global web.xml found
-    Feb 14, 2012 5:21:44 PM org.apache.coyote.AbstractProtocol start
-    INFO: Starting ProtocolHandler ["http-bio-8080"]
+For more information about using Java and buildpacks on Heroku, see these Dev Center articles:
 
-Webapp Runner will then launch a Tomcat instance with the given war deployed to it. This takes advantage of Tomcat's embedded APIs and is similar to an option that Jetty offers: [Jetty Runner](http://blogs.webtide.com/janb/entry/jetty_runner). Webapp Runner is [open source](http://github.com/jsimone/webapp-runner) so you can view or contribute to the source code.
+*  [Heroku Java Support](https://devcenter.heroku.com/articles/java-support)
+*  [Introduction to Heroku for Java Developers](https://devcenter.heroku.com/articles/intro-for-java-developers)
+*  [Deploying Tomcat-based Java Web Applications with Webapp Runner](https://devcenter.heroku.com/articles/java-webapp-runner)
+*  [Deploy a Java Web Application that launches with Jetty Runner](https://devcenter.heroku.com/articles/deploy-a-java-web-application-that-launches-with-jetty-runner)
+*  [Using a Custom Maven Settings File](https://devcenter.heroku.com/articles/using-a-custom-maven-settings-xml)
+*  [Using Grunt with Java and Maven to Automate JavaScript Tasks](https://devcenter.heroku.com/articles/using-grunt-with-java-and-maven-to-automate-javascript-tasks)
 
-## Create an application if you don't already have one
+## Examples
 
-    :::term
-    $ mvn archetype:generate -DarchetypeArtifactId=maven-archetype-webapp
+* [Tomcat Webapp-Runner Example](https://github.com/kissaten/webapp-runner-minimal)
+* [Spring Boot Example](https://github.com/kissaten/spring-boot-heroku-demo)
+
+## Configuration
+
+### Choose a JDK
+
+Create a `system.properties` file in the root of your project directory and set `java.runtime.version=1.8`.
+
+Example:
+
+    $ ls
+    Procfile pom.xml src
+
+    $ echo "java.runtime.version=1.8" > system.properties
+
+    $ git add system.properties && git commit -m "Java 8"
+
+    $ git push heroku master
     ...
-    [INFO] Generating project in Interactive mode
-    Define value for property 'groupId': : com.example
-    Define value for property 'artifactId': : helloworld
-    
-(you can pick any groupId or artifactId). You now have a complete Java web app in the `helloworld` directory.
-
-## Configure Maven to Download Webapp Runner
-
-Although not necessary for using Webapp Runner it's a good idea to have your build tool download Webapp Runner for you since your application will need it to run. You could, of course, just download Webapp Runner and use it to launch your application without doing this. However having all of your dependencies defined in your build descriptor is important for application portability and repeatability of deployment. In this case we're using Maven so we'll use the dependency plugin to download the jar. Add the following plugin configuration to your pom.xml:
-
-    <build>
-        ...
-        <plugins>
-            ...    
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>2.3</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals><goal>copy</goal></goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>com.github.jsimone</groupId>
-                                    <artifactId>webapp-runner</artifactId>
-                                    <version>8.0.30.2</version>
-                                    <destFileName>webapp-runner.jar</destFileName>
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
-
-## Run your Application
-
-To build your application simply run:
-
-    :::term
-    $ mvn package
-
-And then run your app using the java command:
-
-    :::term
-    $ java -jar target/dependency/webapp-runner.jar target/*.war
-
-That's it. Your application should start up on port 8080.
-
-## Deploy your Application to Heroku
-
-### Create a Procfile
-
-You declare how you want your application executed in `Procfile` in the project root. Create this file with a single line:
-
-    :::term
-    web:    java $JAVA_OPTS -jar target/dependency/webapp-runner.jar --port $PORT target/*.war
-
-### Deploy to Heroku
-
-Commit your changes to Git:
-
-    :::term
-    $ git init
-    $ git add .
-    $ git commit -m "Ready to deploy"
-
-Create the app on the Cedar stack:
-
-    :::term
-    $ heroku create --stack cedar
-    Creating high-lightning-129... done, stack is cedar
-    http://high-lightning-129.herokuapp.com/ | git@heroku.com:high-lightning-129.git
-    Git remote heroku added
-
-Deploy your code:
-
-    :::term
-    Counting objects: 227, done.
-    Delta compression using up to 4 threads.
-    Compressing objects: 100% (117/117), done.
-    Writing objects: 100% (227/227), 101.06 KiB, done.
-    Total 227 (delta 99), reused 220 (delta 98)
-
-    -----> Heroku receiving push
     -----> Java app detected
-    -----> Installing Maven 3.0.3..... done
-    -----> Installing settings.xml..... done
-    -----> executing .maven/bin/mvn -B -Duser.home=/tmp/build_1jems2so86ck4 -s .m2/settings.xml -DskipTests=true clean install
-           [INFO] Scanning for projects...
-           [INFO]                                                                         
-           [INFO] ------------------------------------------------------------------------
-           [INFO] Building webappRunnerSample Maven Webapp 1.0-SNAPSHOT
-           [INFO] ------------------------------------------------------------------------
-           ...
-           [INFO] ------------------------------------------------------------------------
-           [INFO] BUILD SUCCESS
-           [INFO] ------------------------------------------------------------------------
-           [INFO] Total time: 36.612s
-           [INFO] Finished at: Tue Aug 30 04:03:02 UTC 2011
-           [INFO] Final Memory: 19M/287M
-           [INFO] ------------------------------------------------------------------------
-    -----> Discovering process types
-           Procfile declares types -> web
-    -----> Compiled slug size is 4.5MB
-    -----> Launching... done, v5
-           http://pure-window-800.herokuapp.com deployed to Heroku
+    -----> Installing OpenJDK 1.8... done
+    -----> Installing Maven 3.3.3... done
+    ...
 
-Congratulations! Your web app should now be up and running on Heroku. Open it in your browser with:
+### Choose a Maven Version
 
-    :::term  
-    $ heroku open
+You can define a specific version of Maven for Heroku to use by adding the
+[Maven Wrapper](https://github.com/takari/maven-wrapper) to your project. When
+this buildpack detects the precense of a `mvnw` script and a `.mvn` directory,
+it will run the Maven Wrapper instead of the default `mvn` command.
 
-## Use Distributed HTTP Sessions with Memcache
+If you need to override this, the `system.properties` file also allows for a `maven.version` entry
+(regardless of whether you specify a `java.runtime.version` entry). For example:
 
-Explicitly storing session state in a database or other backend data store is a more scalable alternative to using distributed HTTP sessions. To find out if distributed HTTP sessions are the best design choice for your application see the
-article on [distributed HTTP sessions](memcache-http-sessions-java).
+```
+java.runtime.version=1.8
+maven.version=3.3.9
+```
 
-Webapp runner supports the memcached-session-manager for Tomcat. In order to enable memcache backed sessions you need to make the configuration for your memcache instance available through environment variables and then enable the sesssion manager.
+### Customize Maven
 
-### Make memcache configuration information available
+There are three config variables that can be used to customize the Maven execution:
 
-The [Heroku Memcache Add On](https://addons.heroku.com/memcache) will set the required environment variables for you. Once you have an existing app get the add on by running:
++ `MAVEN_CUSTOM_GOALS`: set to `clean dependency:list install` by default
++ `MAVEN_CUSTOM_OPTS`: set to `-DskipTests` by default
++ `MAVEN_JAVA_OPTS`: set to `-Xmx1024m` by default
 
-    :::term
-    $ heroku addons:add memcache:5mb
+These variables can be set like this:
 
-Note: you may have to [verify](https://api.heroku.com/verify) your account before you can add this add on.
+```sh-session
+$ heroku config:set MAVEN_CUSTOM_GOALS="clean package"
+$ heroku config:set MAVEN_CUSTOM_OPTS="--update-snapshots -DskipTests=true"
+$ heroku config:set MAVEN_JAVA_OPTS="-Xss2g"
+```
 
-When running locally you can either set up a local install of memcache or connect to the remote memcache service provisioned for you by the Heroku add on.
+Other options are available for [defining a custom `settings.xml` file](https://devcenter.heroku.com/articles/using-a-custom-maven-settings-xml).
 
-When used with webapp runner the memcache backed session manager looks for 3 environment variables: MEMCACHE_SERVERS, MEMCACHE_USERNAME, MEMCACHE_PASSWORD. You can set these to point to a local memcache install or connect to the remote memcache service provisioned for you by the Heroku add on by running `heroku config` and copying the values into local environment variables.
+## Development
 
-### Enable memcached-session-manager
+To make changes to this buildpack, fork it on Github. Push up changes to your fork, then create a new Heroku app to test it, or configure an existing app to use your buildpack:
 
-To enable memcache backed sessions with webapp runner you include the following flag: `--session_manager memcache`
+```
+# Create a new Heroku app that uses your buildpack
+heroku create --buildpack <your-github-url>
 
-So if launching locally your command would now look like:
+# Configure an existing Heroku app to use your buildpack
+heroku buildpacks:set <your-github-url>
 
-    :::term
-    $ java -jar target/dependency/webapp-runner.jar --session_manager memcache target/*.war
+# You can also use a git branch!
+heroku buildpacks:set <your-github-url>#your-branch
+```
 
-Or your Procfile would look like:
+For example if you want to have maven available to use at runtime in your application, you can copy it from the cache directory to the build directory by adding the following lines to the compile script:
 
-    :::term
-    web:    java $JAVA_OPTS -jar target/dependency/webapp-runner.jar --port $PORT --session_manager memcache target/*.war
+    for DIR in ".m2" ".maven" ; do
+      cp -r $CACHE_DIR/$DIR $BUILD_DIR/$DIR
+    done
 
-## Clone the source
+This will copy the local maven repo and maven binaries into your slug.
 
-If you want to skip the creation steps you can clone the finished sample (without memcache backed session):
+Commit and push the changes to your buildpack to your Github fork, then push your sample app to Heroku to test. Once the push succeeds you should be able to run:
 
-    $ git clone git@github.com:heroku/devcenter-webapp-runner.git
+    $ heroku run bash
 
-## Clone as a Heroku app
+and then:
 
-One of the tempalates available at [java.heroku.com](http://java.heroku.com) uses Webapp Runner with Spring MVC. You can clone this template into your Heroku account by going [here](https://api.heroku.com/myapps/template-java-spring-hibernate/clone).
+    $ ls -al
+
+and you'll see the `.m2` and `.maven` directories are now present in your slug.
+
+License
+-------
+
+Licensed under the MIT License. See LICENSE file.
