@@ -7,14 +7,17 @@ import javax.servlet.http.*;
 
 public class HelloWorldServlet extends HttpServlet {
 	
-	private static final long serialVersionUID = 1031422249396784970L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
-	public void doGet(HttpServletRequest req, HttpServletResponse resp)
+	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		
-		resp.setContentType("text/html");
+		response.setContentType("text/html");
 		
-		PrintWriter out = resp.getWriter();
+		PrintWriter out = response.getWriter();
 		out.print("Hello World from Servlet");
 		out.flush();
 		out.close();
