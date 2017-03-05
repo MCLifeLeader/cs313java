@@ -14,19 +14,26 @@ public class LogoutServlet
 	
 	private static final long serialVersionUID = 3L;
 
-	public void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		
-		response.setContentType("text/html");
-		
-		PrintWriter out = response.getWriter();
-		out.println("Good Bye");
-		out.flush();
-		out.close();
-		
-        request.getSession().removeAttribute("username");
-        response.sendRedirect("index.jsp");
-}
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        
+        // Delete the Session variable
+        request.getSession().setAttribute("username", null);
+        // Redirect to login.jsp page
+        response.sendRedirect("login.jsp");
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
+    }
 	
     @Override
     public String getServletInfo() 

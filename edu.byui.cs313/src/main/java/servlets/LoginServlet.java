@@ -21,22 +21,23 @@ public class LoginServlet
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException 
     {
-        String username = request.getParameter("txtUsername");
-        String password = request.getParameter("txtPassword");
-
-        if (username != null && 
-        		password != null &&
-        		username.equals(testUsername) && 
-                password.equals(testPassword)) 
-        {
-
-            request.getSession().setAttribute("username", username);            
-            response.sendRedirect("Welcome.jsp");
-        } 
-        else 
-        {
-        	request.setAttribute("error", "Invalid login");
-        	request.getRequestDispatcher("Login.jsp").forward(request,response);
+        // Declare correct username and password
+        String correctUsername = "userId";
+        String correctPassword = "test123";
+        
+        // Grab the incoming datas
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+        
+        if(username.equals(correctUsername) && password.equals(correctPassword)) {
+            // Set the session stuff yasss
+            request.getSession().setAttribute("username", username);
+            response.sendRedirect("welcome.jsp");
+        } else {
+            // Something was incorrect
+            request.setAttribute("error", "Yo crap is broken");
+            // Redirect back to login.jsp
+            request.getRequestDispatcher("login.jsp").forward(request,response);
         }
     }
 

@@ -1,21 +1,26 @@
+<%-- 
+    Document   : login
+    Created on : Feb 28, 2017, 9:42:20 PM
+    Author     : vmthompson - cs313 team
+--%>
+
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
-	<head>
-	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-	<title>Login</title>
-	</head>
-	<body>
-		<c:if test="$(not empty error)">
-			<p>${error}</p>
-		</c:if>
-	    <form id="form" action="login" method="POST">
-	      <label for="book">Username:</label>
-	      <input type="text" name="txtUsername" id="txtUsername"><br>
-	      <label for="chapter">Password:</label>
-	      <input type="text" name="txtPassword" id="txtPassword"><br>
-	      <br>
-	      <input type="submit" value="Login" />
-	    </form>
-	</body>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Team Activity 9 Login</title>
+    </head>
+    <body>
+        <c:if test="${not empty error}">
+            <p>${error}</p>
+        </c:if>
+        
+        <form action="Login" method="POST">
+            Username: <input type="text" name="username"><br>
+            Password: <input type="password" name="password"><br>
+            <br>
+            <input type="submit" value="Submit">
+        </form>
+    </body>
 </html>
