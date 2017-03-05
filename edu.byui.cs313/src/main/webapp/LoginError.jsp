@@ -9,9 +9,15 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Login Control</title>
+        <title>Login Error</title>
     </head>
     <body>
+    <h1>Login Error</h1>
+<!--     
+        <c:if test="${not empty error}">
+            <p><%= request.getSession().getAttribute("username") %></p>
+        </c:if>
+-->   
         <form action="Login" method="POST">
             Username: <input type="text" name="username"><br>
             Password: <input type="password" name="password"><br>

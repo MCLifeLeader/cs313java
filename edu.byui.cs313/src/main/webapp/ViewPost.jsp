@@ -7,6 +7,5 @@
 </head>
 <body>
 	<h2>Hello World from JSP!</h2>
-	<a href="Login.jsp">Login</a>
 </body>
 </html>

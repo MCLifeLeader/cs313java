@@ -12,7 +12,7 @@ public class LogoutServlet
 	extends HttpServlet
 {
 	
-	private static final long serialVersionUID = 3L;
+	private static final long serialVersionUID = 1L;
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -20,7 +20,7 @@ public class LogoutServlet
         // Delete the Session variable
         request.getSession().setAttribute("username", null);
         // Redirect to login.jsp page
-        response.sendRedirect("login.jsp");
+        response.sendRedirect("Login.jsp");
     }
 
     @Override

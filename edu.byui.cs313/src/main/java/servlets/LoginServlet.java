@@ -2,6 +2,9 @@ package servlets;
 
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
@@ -11,40 +14,34 @@ import javax.servlet.http.*;
 public class LoginServlet 
 	extends HttpServlet
 {
-	private String testUsername = "michael";
-	private String testPassword = "password";
+	private String correctUsername = "michael";
+	private String correctPassword = "password";
 	
-	private static final long serialVersionUID = 2L;
+	private static final long serialVersionUID = 1L;
 
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException 
     {
-        // Declare correct username and password
-        String correctUsername = "userId";
-        String correctPassword = "test123";
-        
         // Grab the incoming datas
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         
-        if(username.equals(correctUsername) && password.equals(correctPassword)) {
-            // Set the session stuff yasss
-            request.getSession().setAttribute("username", username);
-            response.sendRedirect("welcome.jsp");
-        } else {
-            // Something was incorrect
-            request.setAttribute("error", "Yo crap is broken");
-            // Redirect back to login.jsp
-            request.getRequestDispatcher("login.jsp").forward(request,response);
+        if(validateLogin(username,password))
+        {
+            request.getRequestDispatcher("ViewPost.jsp").forward(request,response);
+        }
+        else
+        {
+            request.getRequestDispatcher("LoginError.jsp").forward(request,response);
         }
     }
 
     @Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		
+			throws ServletException, IOException 
+    {		
     	response.setContentType("text/html");
 		
 		PrintWriter out = response.getWriter();
@@ -57,5 +54,51 @@ public class LoginServlet
     public String getServletInfo() 
     {
         return "Simple Login Control";
+    }
+    
+    private boolean validateLogin(String userName, String password) throws IOException
+    {
+    	boolean isLoginValid = false;
+    	
+        String contextPath = getServletContext().getRealPath("/");
+
+        String xmlFilePath=contextPath+"\\loginDb.txt";
+        
+        
+        System.out.println("michael|password");
+        System.out.println("steve|password");
+        System.out.println("bob|password");
+
+        File myfile = new File(xmlFilePath);
+
+        myfile.createNewFile();
+        
+        
+        try 
+        {
+        	InputStream input = Thread.currentThread().getContextClassLoader().getResourceAsStream("loginDb.txt");        
+        	BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+
+            String line;
+            while ((line = reader.readLine()) != null) 
+            {
+            	String [] keyPair = line.split("|");            	
+            	if(userName.equals(keyPair[0]) && password.equals(keyPair[1]))
+            	{
+            		isLoginValid = true;
+            		break;
+            	}
+            }
+        }
+        catch(NullPointerException e)
+        {
+            e.printStackTrace();
+        }
+        catch (IOException e) 
+        {
+            e.printStackTrace();
+        }
+    	
+    	return isLoginValid;
     }
 }
