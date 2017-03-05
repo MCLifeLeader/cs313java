@@ -1,9 +1,3 @@
-<%-- 
-    Document   : welcome
-    Created on : Feb 28, 2017, 9:51:40 PM
-    Author     : vmthompson - cs313 team
---%>
-
 <%@page contentType="text/html" pageEncoding="UTF-8" session="true"%>
 <!DOCTYPE html>
 <html>

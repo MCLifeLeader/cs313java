@@ -2,8 +2,6 @@ package servlets;
 
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -14,9 +12,6 @@ import javax.servlet.http.*;
 public class LoginServlet 
 	extends HttpServlet
 {
-	private String correctUsername = "michael";
-	private String correctPassword = "password";
-	
 	private static final long serialVersionUID = 1L;
 
 
@@ -24,13 +19,12 @@ public class LoginServlet
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException 
     {
-        // Grab the incoming datas
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         
         if(validateLogin(username,password))
         {
-            request.getRequestDispatcher("ViewPost.jsp").forward(request,response);
+            request.getRequestDispatcher("NewPost.jsp").forward(request,response);
         }
         else
         {
@@ -42,10 +36,17 @@ public class LoginServlet
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException 
     {		
-    	response.setContentType("text/html");
+    	response.setContentType("text/html");		
+		PrintWriter out = response.getWriter();		
 		
-		PrintWriter out = response.getWriter();
-		out.print("Login Failure");
+		out.println("Login Failure");
+		
+		//C:\Code\Eclipse\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\edu.byui.cs313\loginDb.txt 
+		//String loginFile = getServletContext().getRealPath("/") + "loginDb.txt";
+		//out.println(loginFile);
+
+		//FileOutputStream fileOutput = new FileOutputStream(loginFile);
+       
 		out.flush();
 		out.close();
 	}
@@ -60,35 +61,41 @@ public class LoginServlet
     {
     	boolean isLoginValid = false;
     	
-        String contextPath = getServletContext().getRealPath("/");
-
-        String xmlFilePath=contextPath+"\\loginDb.txt";
-        
-        
-        System.out.println("michael|password");
-        System.out.println("steve|password");
-        System.out.println("bob|password");
-
-        File myfile = new File(xmlFilePath);
-
-        myfile.createNewFile();
-        
-        
         try 
         {
-        	InputStream input = Thread.currentThread().getContextClassLoader().getResourceAsStream("loginDb.txt");        
+            String loginFile = getServletContext().getRealPath("/") + "loginDb.txt";
+
+            File file = new File(loginFile);
+            
+        	if (!file.exists() || file.length() < 1 )
+        	{
+        		FileOutputStream fos = new FileOutputStream(file);
+        		file.createNewFile();
+        		
+        		String users = "michael-password\r\nbob-password\r\nsteve-password\r\n";
+        		byte[] bytesArray = users.getBytes();
+        		
+        		fos.write(bytesArray);
+        		fos.flush();
+        		fos.close();
+       	  	}
+        	
+            InputStream input = new FileInputStream(loginFile);
         	BufferedReader reader = new BufferedReader(new InputStreamReader(input));
 
             String line;
-            while ((line = reader.readLine()) != null) 
+            while ((line = reader.readLine()) != null)
             {
-            	String [] keyPair = line.split("|");            	
+            	String [] keyPair = line.split("-"); //"michael" "password" 
+            	
             	if(userName.equals(keyPair[0]) && password.equals(keyPair[1]))
             	{
             		isLoginValid = true;
             		break;
             	}
             }
+            
+            reader.close();
         }
         catch(NullPointerException e)
         {

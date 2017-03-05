@@ -1,9 +1,3 @@
-<%-- 
-    Document   : login
-    Created on : Feb 28, 2017, 9:42:20 PM
-    Author     : vmthompson - cs313 team
---%>
-
 <%@page contentType="text/html" pageEncoding="UTF-8" session="true"%>
 <!DOCTYPE html>
 <html>
@@ -12,6 +6,8 @@
         <title>Login Control</title>
     </head>
     <body>
+    <h2>Username: michael</h2>
+    <h2>Password: password</h2>
         <form action="Login" method="POST">
             Username: <input type="text" name="username"><br>
             Password: <input type="password" name="password"><br>

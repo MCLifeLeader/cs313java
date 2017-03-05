@@ -26,13 +26,13 @@
   	<servlet-name>EnterPost</servlet-name>
   	<display-name>EnterPost</display-name>
   	<description></description>
-  	<servlet-class>servlets.EnterPost</servlet-class>
+  	<servlet-class>servlets.EnterPostServlet</servlet-class>
   </servlet>
   <servlet>
   	<servlet-name>ViewPost</servlet-name>
   	<display-name>ViewPost</display-name>
   	<description></description>
-  	<servlet-class>servlets.ViewPost</servlet-class>
+  	<servlet-class>servlets.ViewPostServlet</servlet-class>
   </servlet>
   <servlet-mapping>
   	<servlet-name>LoginServlet</servlet-name>
