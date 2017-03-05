@@ -8,31 +8,31 @@
   	<servlet-name>LoginServlet</servlet-name>
   	<display-name>LoginServlet</display-name>
   	<description></description>
-  	<servlet-class>servlets.LoginServlet</servlet-class>
+  	<servlet-class>edu.byui.cs313.servlets.LoginServlet</servlet-class>
   </servlet>
   <servlet>
   	<servlet-name>LogoutServlet</servlet-name>
   	<display-name>LogoutServlet</display-name>
   	<description></description>
-  	<servlet-class>servlets.LogoutServlet</servlet-class>
+  	<servlet-class>edu.byui.cs313.servlets.LogoutServlet</servlet-class>
   </servlet>
   <servlet>
   	<servlet-name>HelloWorldServlet</servlet-name>
   	<display-name>HelloWorldServlet</display-name>
   	<description></description>
-  	<servlet-class>servlets.HelloWorldServlet</servlet-class>
+  	<servlet-class>edu.byui.cs313.servlets.HelloWorldServlet</servlet-class>
   </servlet>
   <servlet>
   	<servlet-name>EnterPost</servlet-name>
   	<display-name>EnterPost</display-name>
   	<description></description>
-  	<servlet-class>servlets.EnterPostServlet</servlet-class>
+  	<servlet-class>edu.byui.cs313.servlets.EnterPostServlet</servlet-class>
   </servlet>
   <servlet>
   	<servlet-name>ViewPost</servlet-name>
   	<display-name>ViewPost</display-name>
   	<description></description>
-  	<servlet-class>servlets.ViewPostServlet</servlet-class>
+  	<servlet-class>edu.byui.cs313.servlets.ViewPostServlet</servlet-class>
   </servlet>
   <servlet-mapping>
   	<servlet-name>LoginServlet</servlet-name>

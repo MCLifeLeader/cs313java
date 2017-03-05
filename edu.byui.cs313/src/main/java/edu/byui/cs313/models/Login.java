@@ -1,4 +1,4 @@
-package models;
+package edu.byui.cs313.models;
 
 public class Login 
 {

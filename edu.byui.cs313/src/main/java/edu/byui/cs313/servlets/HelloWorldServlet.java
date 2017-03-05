@@ -1,4 +1,4 @@
-package servlets;
+package edu.byui.cs313.servlets;
 
 
 import java.io.*;
