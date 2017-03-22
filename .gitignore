@@ -81,3 +81,6 @@ local.properties
 .cache-main
 .scala_dependencies
 .worksheet
+/Authors/nbproject/private/
+/Authors/build/
+/Authors/dist/
